@@ -275,7 +275,7 @@ public class Env{
                 res.list = new LinkedList<LISP_object>();                
                 res.list.add(op1);
                 if (op2.list == null){
-                    res.list.add(op1);
+                    res.list.add(op2);
                 }else{
                     for (LISP_object it: op2.list){
                         res.list.add(it);

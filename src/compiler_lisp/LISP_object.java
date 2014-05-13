@@ -44,16 +44,25 @@ public class LISP_object {
         else return "";
     }
     
-    public boolean equals(LISP_object o){
-        if (this.proc == o.proc && this.var !=null 
-           && o.var != null && this.var.equals(o.var)
-           && this.res == o.res) {
-            if (this.list == null &&o.list==null) return true;
-            else
-            if (this.list != null && o.list != null && this.list.equals(o.list)) return true;            
-            else return false;
-            
+    public boolean equals(Object o1){
+        LISP_object o = (LISP_object)o1;
+        if (this.proc == o.proc){            
+            if ((this.var != null && o.var!=null && this.var.equals(o.var))
+                    || (this.var == null && o.var == null)){
+                if (this.res == o.res){
+                    if ((this.list == null && o.list == null) 
+                            || this.list != null && o.list != null && this.list.equals(o.list)) 
+                        return true;                                    
+                        else return false;
+                }else{
+                    return false;
+                }
+            }else {
+                return false;
+            }
         }
-        else return false;
+        else{
+            return false;
+        }
     }
 }

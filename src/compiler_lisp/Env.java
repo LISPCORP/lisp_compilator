@@ -12,10 +12,10 @@ public class Env{
     public HashMap<String, LISP_object> env_dict = new HashMap<String,LISP_object>();
     public Env outer = null;
     public double eps = 10e-7;
-    public Env(LinkedList<Atom>parms, LinkedList<LISP_object> args, Env outer){
+    public Env(LISP_object parms, LinkedList<LISP_object> args, Env outer){
         this.outer = outer;
-        for (int i = 0; i<parms.size(); i++){
-            env_dict.put(parms.get(i).data, args.get(i));
+        for (int i = 0; i<parms.list.size(); i++){
+            env_dict.put(parms.list.get(i).var.data, args.get(i));
         }
     }
     public Env(){
@@ -392,69 +392,62 @@ public class Env{
     
     
     
-    public LISP_object eval(final Node x,final Env env){
+    public LISP_object eval(final LISP_object x,final Env env){
         LISP_object res = new LISP_object();
-        if (x.data != null && x.data.type.equals("String")){
-            return env.find(x.data.data).env_dict.get(x.data.data);
+        if (x.var != null && x.var.type.equals("String")){
+            return env.find(x.var.data).env_dict.get(x.var.data);
         }
         else 
-        if (!(x.data == null)){
-           res.var = x.data;
+        if (!(x.list != null)){
+           res.var = x.var.copy();
            return res;
         }
         else       
-        if (x.childList.get(0).data.type.equals("String") && x.childList.get(0).data.data.equals("quote")){
+        if (x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("quote")){
             
-            res = x.childList.get(1).quote().copy();
+            res = x.list.get(1).copy();
         }
         else        
-        if (x.childList.get(0).data.type.equals("String") && x.childList.get(0).data.data.equals("if")){
-            Node test = x.childList.get(1);
-            Node conseq = x.childList.get(2);
-            Node alt = x.childList.get(3);
+        if (x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("if")){
+            LISP_object test = x.list.get(1).copy();
+            LISP_object conseq = x.list.get(2).copy();
+            LISP_object alt = x.list.get(3).copy();
             boolean ts = eval(test, env).res;
             if (ts){
                 return eval(conseq, env);
             }else return eval(alt, env);
         }
         else
-        if (x.childList.get(0).data.type.equals("String") && x.childList.get(0).data.data.equals("set!")){
-            Node var = x.childList.get(1);
-            Node exp = x.childList.get(2);
-            env.find(var.data.data).env_dict.put(var.data.data, eval(exp, env));            
+        if (x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("set!")){
+            LISP_object var = x.list.get(1).copy();
+            LISP_object exp = x.list.get(2).copy();
+            env.find(var.var.data).env_dict.put(var.var.data, eval(exp, env));            
         }
         else
-        if (x.childList.get(0).data.type.equals("String") && x.childList.get(0).data.data.equals("define")){
-            Node var = x.childList.get(1);
-            Node exp = x.childList.get(2);
-            env.env_dict.put(var.data.data, eval(exp, env));
+        if (x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("define")){
+            LISP_object var = x.list.get(1).copy();
+            LISP_object exp = x.list.get(2).copy();
+            env.env_dict.put(var.var.data, eval(exp, env));
         }
         else 
-        if (x.childList.get(0).data.type.equals("String") && x.childList.get(0).data.data.equals("lambda")){
-            
-            //(_, vars, exp) = x
-            //return lambda *args: eval(exp, Env(vars, args, env))
+        if (x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("lambda")){            
             res.proc = new Function<LinkedList<LISP_object>, LISP_object>(){
                 public LISP_object apply(LinkedList<LISP_object> ls){
-                    final Node vars = x.childList.get(1);
-                    final Node exp = x.childList.get(2);
-                    final LinkedList<Atom> atoms= new LinkedList<Atom>();
-                    for (Node l: vars.childList){
-                        atoms.add(l.data);
-                    }
-                    return eval(exp, new Env(atoms, ls ,env));
+                    final LISP_object vars = x.list.get(1).copy();
+                    final LISP_object exp = x.list.get(2).copy();                                        
+                    return eval(exp, new Env(vars, ls ,env));
                 }
             };
         }
         else
-        if (x.childList.get(0).data.type.equals("String") && x.childList.get(0).data.data.equals("begin")){
-            for (int i = 1; i<x.childList.size(); i++){
-                res = eval(x.childList.get(i), env);
+        if (x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("begin")){
+            for (int i = 1; i<x.list.size(); i++){
+                res = eval(x.list.get(i), env);
             }
             return res;
         }else{
             LinkedList<LISP_object> exps = new LinkedList<LISP_object>();
-            for (Node exp: x.childList){
+            for (LISP_object exp: x.list){
                 exps.add(eval(exp,env));
             }
             Function<LinkedList<LISP_object>, LISP_object> f = exps.poll().proc;

@@ -14,15 +14,11 @@ import java.util.LinkedList;
  * @author Дима
  */
 public class Parser {
-    public Node getParseTree(String s)throws Exception{
-            // TODO code application logic here
-        /*Node programTree = new Node();              
-        programTree.childList.add(parse(s));                                                                    
-        return programTree;*/
+    public LISP_object getParseTree(String s)throws Exception{        
         return parse(s);
     }
     
-    private Node parse(String s) throws Exception{
+    private LISP_object parse(String s) throws Exception{
         return read_from(tokenize(s));
     }
     private LinkedList<String> tokenize(String s){                    
@@ -34,7 +30,7 @@ public class Parser {
         return lst;
     }
     
-    private Node read_from(LinkedList<String> tokens)throws Exception{            
+    private LISP_object read_from(LinkedList<String> tokens)throws Exception{            
         if (tokens.size() == 0){
             throw new Exception("unexpected EOF while reading");
         }
@@ -45,11 +41,11 @@ public class Parser {
            }while (token.equals(""));
         }
         if ("(".equals(token)){
-            Node L = new Node();
+            LISP_object L = new LISP_object();
+            L.list = new LinkedList();
             while (!tokens.getFirst().equals(")")){
-                Node l = read_from(tokens);
-                l.parent = L;
-                L.childList.add(l);
+                LISP_object l = read_from(tokens);               
+                L.list.add(l);
             }                
             tokens.poll();
             return L;
@@ -58,8 +54,8 @@ public class Parser {
         if (")".equals(token))
             throw new Exception("unexpected EOF while reading");
         else{
-            Node l = new Node();
-            l.data = atom(token);
+            LISP_object l = new LISP_object();
+            l.var = atom(token);
             return l;
         }
     }

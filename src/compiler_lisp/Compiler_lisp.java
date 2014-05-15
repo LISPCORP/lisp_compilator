@@ -21,7 +21,7 @@ public class Compiler_lisp {
           String s = null; 
           Parser parser = new Parser();
           while ((s = br.readLine()) != null){
-              Node program = parser.getParseTree(s);
+              LISP_object program = parser.getParseTree(s);
               System.out.println(program);
               Env e = new Env();
               LISP_object res = e.eval(program, e);

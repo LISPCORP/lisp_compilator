@@ -34,13 +34,13 @@ public class LISP_object {
         return res;
     }
     public String toString(){
-        if (proc != null) return "FUNCTION";
+        if (var!=null) return var.data;
         else if (list != null){
             String res = "(";
             for (LISP_object it: list) res = res+it.toString()+" ";
             res = res+")";
             return res;
-        }else if (var!= null) return var.data;
+        }else if (proc != null) return "FUNCTION";
         else return "";
     }
     

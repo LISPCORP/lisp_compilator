@@ -20,10 +20,11 @@ public class Compiler_lisp {
           BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
           String s = null; 
           Parser parser = new Parser();
+          Env e = new Env();
           while ((s = br.readLine()) != null){
               LISP_object program = parser.getParseTree(s);
               System.out.println(program);
-              Env e = new Env();
+              
               LISP_object res = e.eval(program, e);
               System.out.println(res);              
           }                    

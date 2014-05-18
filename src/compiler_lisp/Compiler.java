@@ -4,6 +4,9 @@
  */
 package compiler_lisp;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -14,7 +17,31 @@ import java.util.LinkedList;
 public class Compiler {
     public Env globals = new Env();
     
-    public HashMap<String,String> functions = new HashMap();    
+    public HashMap<String,String> functions = new HashMap();
+    public void compiler_start() throws Exception{
+        File f = new File("src"+File.separator+"input"+File.separator+"program.lsp");                       
+          BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
+          String s = null; 
+          Parser parser = new Parser();
+          Env e = new Env();
+          
+          while ((s = br.readLine()) != null){
+              LISP_object program = parser.getParseTree(s);                           
+              String res = this.compile(program);
+              if (program.list.get(0).var!=null && program.list.get(0).var.type.equals("String") && program.list.get(0).var.data.equals("begin"))
+                res = "public static LinkedList<LISP_object> forglobals = new LinkedList();\n"
+                      +"public static Env globals = new Env();\n"
+                      + "public static LISP_object evaluate(){LinkedList<LISP_object> res = new LinkedList();\n"+res+"}";
+              else
+                  res = "public static LinkedList<LISP_object> forglobals = new LinkedList();\n"
+                      +"public static Env globals = new Env();\n"
+                      + "public static LISP_object evaluate(){LinkedList<LISP_object> res = new LinkedList();\n"+res+"res.pollLast();}";
+              System.out.println(res);              
+          }
+          for (String it: this.functions.values()) System.out.println(it);
+          br.close();
+    }
+    
     public String compile(final LISP_object x) throws Exception{
          String res = "";
          if (x.var != null && x.var.type.equals("String")){

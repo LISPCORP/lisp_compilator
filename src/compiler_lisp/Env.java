@@ -369,22 +369,7 @@ public class Env{
         p = new LISP_object();
         p.proc = null1;
         env.env_dict.put("null?", p);
-        
-        Function<LinkedList<LISP_object>, LISP_object> cond = new Function<LinkedList<LISP_object>, LISP_object>() {
-            public LISP_object apply(LinkedList<LISP_object> from) {                                                                               
-                for (LISP_object it: from){
-                    if (it.list.get(0).equals(env.env_dict.get("true"))){
-                        return it.list.get(1).copy();
-                    }                    
-                }
-                return null;                         
-            }
-        };
-        p = new LISP_object();
-        p.proc = cond;
-        env.env_dict.put("cond", p);
-        
-        
+                                
         return env;
     }
     
@@ -413,6 +398,17 @@ public class Env{
             if (ts){
                 return eval(conseq, env);
             }else return eval(alt, env);        
+        }
+        else
+        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("cond")){
+            for (int i = 1; i<x.list.size(); i++){
+                LISP_object pair = x.list.get(i).copy();
+                LISP_object test = pair.list.get(0).copy();                
+                LISP_object conseq = pair.list.get(1).copy();
+                if(eval(test, env).res){
+                    return eval(conseq,env);
+                }
+            }
         }
         else
         if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("set!")){
@@ -458,5 +454,5 @@ public class Env{
             }
         }
         return res;
-    }
+    }         
 }

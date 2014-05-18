@@ -16,6 +16,14 @@ public class LISP_object {
     public boolean res = false;
     public LinkedList<LISP_object> list = null;
     
+    
+    public LISP_object(){
+    
+    }
+    public LISP_object(Atom a){
+        this.var = a.copy();
+    }
+    
     public LISP_object copy(){
         LISP_object res = new LISP_object();
         res.proc = this.proc;

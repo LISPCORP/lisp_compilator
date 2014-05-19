@@ -4,15 +4,10 @@
  */
 package compiler_lisp;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
-import output.program;
+
 
 /**
  *
@@ -26,7 +21,11 @@ public class Compiler {
         File f = new File("src"+File.separator+"input"+File.separator+"program.lsp");  
         // прописываем путь где будет храниттся файл
       File f1 = new File(System.getProperty("user.dir")+"/src/output/program.java"); 
+      File f2 = new File(System.getProperty("user.dir")+"/src/output/1.txt"); 
+      f1.delete();
           BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
+          //Открываем 1-й файл для записи
+      BufferedOutputStream bufOut = new BufferedOutputStream(new FileOutputStream(f1, true)); 
           /*будем записывть в конец файла program.java
           ВНИМАНИЕ!!! Не обращать вниания на ошибку в файле program.java. Там не хватает одной скобки }
           При повторном запуске программы удалять содержимое файла program.java
@@ -35,7 +34,20 @@ public class Compiler {
            System.out.println(evaluate());
           }
           */
+      //Открываем 2-й файл для считывания
+      BufferedInputStream bufRead = new BufferedInputStream(new FileInputStream(f2));
+      int n;
+      while((n = bufRead.read()) != -1) {
+      bufOut.write(n);
+      }
+      bufOut.flush();      // Принудительно выталкиваем данные с буфера
+      bufOut.close();     // Закрываем соединения
+      bufRead.close(); 
+      
           Writer writer = new BufferedWriter(new FileWriter(f1,true));
+          
+          
+          
           String s = null; 
           Parser parser = new Parser();
           

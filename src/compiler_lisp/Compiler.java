@@ -5,8 +5,11 @@
 package compiler_lisp;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -19,8 +22,10 @@ public class Compiler {
     
     public HashMap<String,String> functions = new HashMap();
     public void compiler_start() throws Exception{
-        File f = new File("src"+File.separator+"input"+File.separator+"program.lsp");                       
+        File f = new File("src"+File.separator+"input"+File.separator+"program.lsp");  
+         File f1 = new File("outfile.txt");
           BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
+          Writer writer = new BufferedWriter(new FileWriter(f1,true));
           String s = null; 
           Parser parser = new Parser();
           Env e = new Env();
@@ -36,10 +41,17 @@ public class Compiler {
                   res = "public static LinkedList<LISP_object> forglobals = new LinkedList();\n"
                       +"public static Env globals = new Env();\n"
                       + "public static LISP_object evaluate(){LinkedList<LISP_object> res = new LinkedList();\n"+res+"res.pollLast();}";
-              System.out.println(res);              
+              System.out.println(res);
+              writer.append("\r\n");
+              writer.append(res);
           }
-          for (String it: this.functions.values()) System.out.println(it);
+          for (String it: this.functions.values()){
+              System.out.println(it);
+              writer.append("\r\n");
+              writer.append(it);
+          }
           br.close();
+          writer.close();
     }
     
     public String compile(final LISP_object x) throws Exception{
@@ -100,10 +112,12 @@ public class Compiler {
          }else
          if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("begin")){
              res = res+"{\n";
-             for (int i = 1; i<x.list.size()-1; i++){
-                 res = res + compile(x.list.get(i));
-             }
-             res = res + compile(x.list.get(x.list.size()-1))+"\n";
+             for (int i = 1; i<x.list.size(); i++){
+                 if (x.list.get(i).var != null && x.list.get(i).var.type.equals("String"))
+                    res = res + "res.add("+compile(x.list.get(i))+");";
+                 else
+                    res = res + compile(x.list.get(i));
+             }            
              res =res+"return res.pollLast();"+"}\n";
          }else{
             LinkedList<String> exps = new LinkedList<String>();

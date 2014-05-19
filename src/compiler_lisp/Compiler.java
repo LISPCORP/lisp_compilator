@@ -28,7 +28,7 @@ public class Compiler {
           Writer writer = new BufferedWriter(new FileWriter(f1,true));
           String s = null; 
           Parser parser = new Parser();
-          Env e = new Env();
+          
           
           while ((s = br.readLine()) != null){
               LISP_object program = parser.getParseTree(s);                           

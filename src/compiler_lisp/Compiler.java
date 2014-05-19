@@ -40,7 +40,7 @@ public class Compiler {
               else
                   res = "public static LinkedList<LISP_object> forglobals = new LinkedList();\n"
                       +"public static Env globals = new Env();\n"
-                      + "public static LISP_object evaluate(){LinkedList<LISP_object> res = new LinkedList();\n"+res+"res.pollLast();}";
+                      + "public static LISP_object evaluate(){LinkedList<LISP_object> res = new LinkedList();\n"+res+"return res.pollLast();}";
               System.out.println(res);
               writer.append("\r\n");
               writer.append(res);

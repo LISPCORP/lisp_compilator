@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedList;
+import output.program;
 
 /**
  *
@@ -23,8 +24,17 @@ public class Compiler {
     public HashMap<String,String> functions = new HashMap();
     public void compiler_start() throws Exception{
         File f = new File("src"+File.separator+"input"+File.separator+"program.lsp");  
-         File f1 = new File("outfile.txt");
+        // прописываем путь где будет храниттся файл
+      File f1 = new File(System.getProperty("user.dir")+"/src/output/program.java"); 
           BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
+          /*будем записывть в конец файла program.java
+          ВНИМАНИЕ!!! Не обращать вниания на ошибку в файле program.java. Там не хватает одной скобки }
+          При повторном запуске программы удалять содержимое файла program.java
+          после 
+          public static void main(String[] args){
+           System.out.println(evaluate());
+          }
+          */
           Writer writer = new BufferedWriter(new FileWriter(f1,true));
           String s = null; 
           Parser parser = new Parser();
@@ -50,6 +60,9 @@ public class Compiler {
               writer.append("\r\n");
               writer.append(it);
           }
+          //в конце файла progrm.java не хватает }, поэтому добавляем }
+          writer.append("\r\n");
+          writer.append("}");
           br.close();
           writer.close();
     }
@@ -73,13 +86,13 @@ public class Compiler {
             String test_compiled = compile(test);
             
             if (conseq.var != null)
-                res = res+test_compiled+"\nif(res.pollLast().res){return "+compile(conseq)+";}";
+                res = res+test_compiled+"\nif(res.poll().res){return "+compile(conseq)+";}";
             else 
-                res = res+test_compiled+"\nif(res.pollLast().res){"+compile(conseq)+"}";
+                res = res+test_compiled+"\nif(res.poll().res){"+compile(conseq)+"}";
             if (alt.var != null)
                 res = res+"else{return "+compile(alt)+"}";
             else 
-                res = res+"else{"+compile(alt)+"return res.pollLast();"+"}";            
+                res = res+"else{"+compile(alt)+"return res.poll();"+"}";            
          }else
          if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("set!")){
             LISP_object var = x.list.get(1).copy();
@@ -104,7 +117,7 @@ public class Compiler {
             }else{
                 if (exp.list != null){
                     res = res + compile(exp)+"\n";
-                    res = res + "LISP_object "+var.var.data+" = res.pollLast();\n";
+                    res = res + "LISP_object "+var.var.data+" = res.poll();\n";
                 }
                 else
                     res = res + "LISP_object "+var.var.data+" = "+compile(exp)+";\n";
@@ -118,7 +131,7 @@ public class Compiler {
                  else
                     res = res + compile(x.list.get(i));
              }            
-             res =res+"return res.pollLast();"+"}\n";
+             res =res+"return res.poll();"+"}\n";
          }else{
             LinkedList<String> exps = new LinkedList<String>();
             for (LISP_object it:x.list){
@@ -126,7 +139,7 @@ public class Compiler {
                     exps.add(compile(it));
                 else{
                     res = res + compile(it);
-                    exps.add("res.pollLast()");
+                    exps.add("res.poll()");
                 }
             }
             if(globals.env_dict.get(exps.get(0))!=null){

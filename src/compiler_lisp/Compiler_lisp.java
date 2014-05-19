@@ -17,10 +17,10 @@ public class Compiler_lisp {
     public static void main(String[] args){
       try {
           File f = new File("src"+File.separator+"input"+File.separator+"program.lsp");
-          File f1 = new File("outfile.txt");
-          f1.delete();
+       //   File f1 = new File("outfile.txt");
+       //   f1.delete();
           BufferedReader br = new BufferedReader(new FileReader(f.getAbsolutePath()));
-          FileWriter writer = new FileWriter(f1,true);
+        //  FileWriter writer = new FileWriter(f1,true);
 
          // Writer writer = new BufferedWriter(new FileWriter("D:\\file.txt"));
           String s = null; 
@@ -29,17 +29,17 @@ public class Compiler_lisp {
           while ((s = br.readLine()) != null){
               LISP_object program = parser.getParseTree(s);
               System.out.println(program);
-              writer.append("\r\n");
-              writer.append(program.toString());
+           //   writer.append("\r\n");
+           //   writer.append(program.toString());
              
               LISP_object res = e.eval(program, e);
               System.out.println(res);  
-              writer.append("\r\n");
-              writer.append(res.toString());
+            //  writer.append("\r\n");
+           //   writer.append(res.toString());
              
           }
           br.close();
-          writer.close();
+        //  writer.close();
           compiler();
          // System.out.println(evaluate());
       }catch(Exception e){

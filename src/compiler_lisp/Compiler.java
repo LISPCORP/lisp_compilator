@@ -49,10 +49,15 @@ public class Compiler {
           
           
           String s = null; 
+          String str ="";
           Parser parser = new Parser();
-          
-          
           while ((s = br.readLine()) != null){
+              
+            // System.out.println(s); 
+             str = str+s;
+          }
+          s = str;
+                    
               LISP_object program = parser.getParseTree(s);                           
               String res = this.compile(program);
               if (program.list.get(0).var!=null && program.list.get(0).var.type.equals("String") && program.list.get(0).var.data.equals("begin"))
@@ -66,7 +71,7 @@ public class Compiler {
               System.out.println(res);
               writer.append("\r\n");
               writer.append(res);
-          }
+          
           for (String it: this.functions.values()){
               System.out.println(it);
               writer.append("\r\n");

@@ -51,7 +51,7 @@ public class Compiler_lisp {
              
          
         //  writer.close();
-         // compiler();
+          compiler();
          // System.out.println(evaluate());
             br.close();
       }catch(Exception e){

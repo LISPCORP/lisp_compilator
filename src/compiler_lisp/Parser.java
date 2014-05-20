@@ -52,7 +52,7 @@ public class Parser {
                 //System.out.println("lol " + tokens.getFirst());
                 if (tokens.getFirst().equals("\n"))
                 {
-                    System.out.println("lol");
+                    //System.out.println("lol");
                     tokens.poll();
                 }
                 LISP_object l = read_from(tokens);               

@@ -21,12 +21,14 @@ public class Parser {
     private LISP_object parse(String s) throws Exception{
         return read_from(tokenize(s));
     }
-    private LinkedList<String> tokenize(String s){                    
+    private LinkedList<String> tokenize(String s){  
+        
         s = s.replace("("," ( ").replace(")"," ) ");           
         LinkedList<String> lst = new LinkedList<String>();
         for (String st: s.split("\\s+")){
             lst.add(st);
         }
+        
         return lst;
     }
     
@@ -43,7 +45,16 @@ public class Parser {
         if ("(".equals(token)){
             LISP_object L = new LISP_object();
             L.list = new LinkedList();
+            
+           
+            
             while (!tokens.getFirst().equals(")")){
+                //System.out.println("lol " + tokens.getFirst());
+                if (tokens.getFirst().equals("\n"))
+                {
+                    System.out.println("lol");
+                    tokens.poll();
+                }
                 LISP_object l = read_from(tokens);               
                 L.list.add(l);
             }                

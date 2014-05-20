@@ -5,6 +5,7 @@
 package compiler_lisp;
 import java.io.*;
 import java.util.*;
+
 /**
  *
  * @author Дима
@@ -23,10 +24,21 @@ public class Compiler_lisp {
         //  FileWriter writer = new FileWriter(f1,true);
 
          // Writer writer = new BufferedWriter(new FileWriter("D:\\file.txt"));
+          String str = "";
           String s = null; 
           Parser parser = new Parser();
           Env e = new Env();
+          
           while ((s = br.readLine()) != null){
+              
+            // System.out.println(s); 
+             str = str+s;
+          }
+          s = str;
+          
+           
+          
+               
               LISP_object program = parser.getParseTree(s);
               System.out.println(program);
            //   writer.append("\r\n");
@@ -37,11 +49,11 @@ public class Compiler_lisp {
             //  writer.append("\r\n");
            //   writer.append(res.toString());
              
-          }
-          br.close();
+         
         //  writer.close();
-          compiler();
+         // compiler();
          // System.out.println(evaluate());
+            br.close();
       }catch(Exception e){
         System.out.println(e);
       }

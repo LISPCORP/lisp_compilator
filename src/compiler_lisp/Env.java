@@ -444,7 +444,7 @@ public class Env{
                 exps.add(eval(exp,env));
             }
             if (env.find("true").env_dict.get("true").equals(exps.get(0)) 
-                    || env.find("true").env_dict.get("true").equals(exps.get(0))){
+                    || env.find("false").env_dict.get("false").equals(exps.get(0))){
                 Function<LinkedList<LISP_object>, LISP_object> f = exps.get(0).proc;
                 return f.apply(exps);
             

@@ -12,6 +12,17 @@ public class Atom{
     public String data = null;
     public String type = null;
     
+    public Atom(){
+    
+    }
+    
+    public Atom(String data){       
+        Atom t = Parser.atom(data);
+        this.data = t.data;
+        this.type = t.type;
+    }
+    
+    
     public Atom copy(){
         Atom res = new Atom();
         res.data = this.data;

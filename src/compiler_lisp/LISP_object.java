@@ -16,6 +16,14 @@ public class LISP_object {
     public boolean res = false;
     public LinkedList<LISP_object> list = null;
     
+    
+    public LISP_object(){
+    
+    }
+    public LISP_object(Atom a){
+        this.var = a.copy();
+    }
+    
     public LISP_object copy(){
         LISP_object res = new LISP_object();
         res.proc = this.proc;
@@ -34,13 +42,13 @@ public class LISP_object {
         return res;
     }
     public String toString(){
-        if (proc != null) return "FUNCTION";
+        if (var!=null) return var.data;
         else if (list != null){
             String res = "(";
             for (LISP_object it: list) res = res+it.toString()+" ";
             res = res+")";
             return res;
-        }else if (var!= null) return var.data;
+        }else if (proc != null) return "FUNCTION";
         else return "";
     }
     

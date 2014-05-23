@@ -1,14 +1,127 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compiler_lisp;
+
+package output;
 import java.util.*;
 /**
  *
- * @author –î–∏–º–∞
+ * @author œ‡‚ÂÎ
  */
-public class Env{            
+public class program {
+  public static class Atom{
+    public String data = null;
+    public String type = null;
+    
+    public Atom(){
+    
+    }
+    
+    public Atom(String data){       
+        Atom t = atom(data);
+        this.data = t.data;
+        this.type = t.type;
+    }
+    
+    
+    public Atom copy(){
+        Atom res = new Atom();
+        res.data = this.data;
+        res.type = this.type;
+        return res;
+    }
+    
+    public boolean equals(Atom o){
+        if (this.data.equals(o.data) && this.type.equals(o.type)) return true;
+        else return false;
+    }
+    public String toString(){
+        return data;
+    }
+    
+}
+    public static Atom atom(String token){
+        Atom t = new Atom();        
+        try{
+            t.data = ""+Double.parseDouble(token);
+            t.type = "Double";
+            return t;
+        }catch(NumberFormatException et){
+            t.data = token;
+            t.type = "String";
+            return t;
+        }                    
+    }
+    public static class LISP_object {
+    public Function<LinkedList<LISP_object>, LISP_object> proc = null;
+    public Atom var = null;
+    public boolean res = false;
+    public LinkedList<LISP_object> list = null;
+    
+    
+    public LISP_object(){
+    
+    }
+    public LISP_object(Atom a){
+        this.var = a.copy();
+    }
+    
+    public LISP_object copy(){
+        LISP_object res = new LISP_object();
+        res.proc = this.proc;
+        if (this.var != null)
+            res.var = this.var.copy();
+        else
+            res.var = null;
+        res.res = this.res;
+        if (this.list == null) res.list = null;
+        else{
+            res.list = new LinkedList<LISP_object>();
+            for (LISP_object it: this.list){
+                res.list.add(it.copy());
+            }
+        }
+        return res;
+    }
+    public String toString(){
+        if (var!=null) return var.data;
+        else if (list != null){
+            String res = "(";
+            for (LISP_object it: list) res = res+it.toString()+" ";
+            res = res+")";
+            return res;
+        }else if (proc != null) return "FUNCTION";
+        else return "";
+    }
+    
+    public boolean equals(Object o1){
+        LISP_object o = (LISP_object)o1;
+        if (this.proc == o.proc){            
+            if ((this.var != null && o.var!=null && this.var.equals(o.var))
+                    || (this.var == null && o.var == null)){
+                if (this.res == o.res){
+                    if ((this.list == null && o.list == null) 
+                            || this.list != null && o.list != null && this.list.equals(o.list)) 
+                        return true;                                    
+                        else return false;
+                }else{
+                    return false;
+                }
+            }else {
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+}
+    public static interface Function<F, T> {
+    T apply(F from);
+}
+    public static class Env{            
     public HashMap<String, LISP_object> env_dict = new HashMap<String,LISP_object>();
     public Env outer = null;
     public double eps = 10e-7;
@@ -372,87 +485,8 @@ public class Env{
                                 
         return env;
     }
+ }
     
-    
-    
-    public LISP_object eval(final LISP_object x,final Env env){
-        LISP_object res = new LISP_object();
-        if (x.var != null && x.var.type.equals("String")){
-            return env.find(x.var.data).env_dict.get(x.var.data);
-        }
-        else 
-        if (!(x.list != null)){
-           res.var = x.var.copy();
-           return res;
-        }
-        else       
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("quote")){            
-            res = x.list.get(1).copy();
-        }
-        else        
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("if")){
-            LISP_object test = x.list.get(1).copy();
-            LISP_object conseq = x.list.get(2).copy();
-            LISP_object alt = x.list.get(3).copy();
-            boolean ts = eval(test, env).res;
-            if (ts){
-                return eval(conseq, env);
-            }else return eval(alt, env);        
-        }
-        else
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("cond")){
-            for (int i = 1; i<x.list.size(); i++){
-                LISP_object pair = x.list.get(i).copy();
-                LISP_object test = pair.list.get(0).copy();                
-                LISP_object conseq = pair.list.get(1).copy();
-                if(eval(test, env).res){
-                    return eval(conseq,env);
-                }
-            }
-        }
-        else
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("set!")){
-            LISP_object var = x.list.get(1).copy();
-            LISP_object exp = x.list.get(2).copy();
-            env.find(var.var.data).env_dict.put(var.var.data, eval(exp, env));            
-        }
-        else
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("define")){
-            LISP_object var = x.list.get(1).copy();
-            LISP_object exp = x.list.get(2).copy();
-            env.env_dict.put(var.var.data, eval(exp, env));
-        }
-        else 
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("lambda")){            
-            res.proc = new Function<LinkedList<LISP_object>, LISP_object>(){
-                public LISP_object apply(LinkedList<LISP_object> ls){
-                    final LISP_object vars = x.list.get(1).copy();
-                    final LISP_object exp = x.list.get(2).copy();                                        
-                    return eval(exp, new Env(vars, ls ,env));
-                }
-            };
-        }
-        else
-        if (x.list.get(0).var!=null && x.list.get(0).var.type.equals("String") && x.list.get(0).var.data.equals("begin")){
-            for (int i = 1; i<x.list.size(); i++){
-                res = eval(x.list.get(i), env);
-            }
-            return res;
-        }else{
-            LinkedList<LISP_object> exps = new LinkedList<LISP_object>();
-            for (LISP_object exp: x.list){
-                exps.add(eval(exp,env));
-            }
-            if (env.find("true").env_dict.get("true").equals(exps.get(0)) 
-                    || env.find("false").env_dict.get("false").equals(exps.get(0))){
-                Function<LinkedList<LISP_object>, LISP_object> f = exps.get(0).proc;
-                return f.apply(exps);
-            
-            }else{
-                Function<LinkedList<LISP_object>, LISP_object> f = exps.poll().proc;
-                return f.apply(exps);
-            }
-        }
-        return res;
-    }         
-}
+   public static void main(String[] args){
+      System.out.println(evaluate());
+   }

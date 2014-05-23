@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  *
- * @author Дима
+ * @author Р”РёРјР°
  */
 public class Compiler_lisp {
 
@@ -35,10 +35,7 @@ public class Compiler_lisp {
              str = str+s;
           }
           s = str;
-          
-           
-          
-               
+                                              
               LISP_object program = parser.getParseTree(s);
               System.out.println(program);
            //   writer.append("\r\n");

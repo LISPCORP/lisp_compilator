@@ -20,7 +20,7 @@ public class Atom{
         Atom t = Parser.atom(data);
         this.data = t.data;
         this.type = t.type;
-    }
+    }  
     
     
     public Atom copy(){
